@@ -1,0 +1,123 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.searchWrap {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px 9px 34px;
+  font-size: 13px;
+  font-family: var(--font-body);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input:focus { border-color: var(--accent); }
+.input::placeholder { color: var(--text3); }
+
+.filters { display: flex; gap: 6px; }
+
+.fBtn {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.fBtn:hover { border-color: var(--border2); color: var(--text); }
+.fBtn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #111;
+}
+
+.actions { display: flex; gap: 8px; }
+
+/* ── CirclePicks — branded gradient button ── */
+.circlePicksBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #7C3AED, #2563EB);
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  position: relative;
+  overflow: hidden;
+}
+.circlePicksBtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #9F67FF, #3B82F6);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+/* .circlePicksBtn:hover::before { opacity: 1; } */
+.circlePicksBtn:hover { transform: translateY(-1px); }
+.circlePicksBtn:active { transform: translateY(0); }
+.circlePicksBtn > * { position: relative; z-index: 1; }
+
+/* Backup (red) — swap class name to use:
+.circlePicksBtn {
+  background: var(--accent2);
+}
+*/
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px dashed rgba(232,197,71,0.5);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.addBtn:hover { background: rgba(232,197,71,0.08); border-style: solid; }
+
+@media (max-width: 640px) {
+  .filters { order: 3; width: 100%; }
+  .actions { order: 2; }
+}

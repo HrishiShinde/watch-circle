@@ -1,0 +1,47 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 26px;
+}
+
+@media (max-width: 600px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.c1::after { background: var(--accent); }
+.c2::after { background: var(--accent3); }
+.c3::after { background: var(--accent2); }
+.c4::after { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+
+.num {
+  font-family: var(--font-head);
+  font-size: 34px;
+  letter-spacing: 1px;
+  line-height: 1;
+  color: var(--text);
+}
+
+.label {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}

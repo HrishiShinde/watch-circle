@@ -1,0 +1,46 @@
+.wrap {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.pill {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 13px;
+  font-size: 12px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pill:hover {
+  border-color: var(--border2);
+  color: var(--text);
+}
+
+/* "All genres" active */
+.pill.active {
+  background: var(--bg4);
+  border-color: var(--border2);
+  color: var(--text);
+}
+
+/* Specific genre active — color comes from inline style */
+.pill.activeGenre {
+  font-weight: 600;
+}
+
+.count {
+  font-size: 10px;
+  opacity: 0.6;
+  font-weight: 400;
+}

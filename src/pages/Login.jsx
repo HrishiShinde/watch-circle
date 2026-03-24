@@ -2,20 +2,31 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import styles from './Auth.module.css'
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [email,    setEmail]    = useState('')
   const [password, setPassword] = useState('')
   const [error,    setError]    = useState('')
   const [loading,  setLoading]  = useState(false)
+  
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    setError('')
+    setError('');
+    
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setError(error.message)
-    setLoading(false)
+
+    if (error) {
+      setError(error.message);
+    } else {
+      navigate('/');
+    }
+
+    setLoading(false);
+    
   }
 
   return (

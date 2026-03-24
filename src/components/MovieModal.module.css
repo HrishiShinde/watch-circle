@@ -114,7 +114,6 @@
 }
 .metaRow strong { color: var(--text); font-weight: 600; }
 
-/* ---- */
 .platformLink {
   display: inline-flex;
   align-items: center;
@@ -138,6 +137,13 @@
   text-decoration: none;
   transition: background-color 0.2s ease;
   margin-top: 8px;
+  width: 200px;
+}
+
+@media screen and (max-width: 768px) {
+  .platformCard {
+    width: 150px;
+  }
 }
 
 .platformCard:hover {

@@ -1,11 +1,12 @@
 import { supabase } from './supabase'
 
 // ─── Shared select query ──────────────────────────────────────────────────────
-// Fetches movies with genres, platforms, added_by profile, and current user's rating
+// Note: profiles joined via added_by foreign key
+// Supabase needs the explicit hint "profiles!added_by" to resolve the relationship
 const MOVIE_SELECT = `
   id, title, poster_path, release_year, duration,
   tmdb_id, avg_rating, rating_count, added_by, created_at,
-  profiles!movies_added_by_fkey ( display_name ),
+  profiles!added_by ( display_name, is_moderator ),
   movie_genres (
     genre_id,
     genres ( id, name, color )
@@ -23,14 +24,14 @@ export function shapeMovie(row, userId) {
     .map(mg => mg.genres?.name)
     .filter(Boolean)
 
-  const platformData = (row.movie_platforms || [])[0]
-  const platform     = platformData?.platforms?.name    || null
+  const platformData  = (row.movie_platforms || [])[0]
+  const platform      = platformData?.platforms?.name    || null
   const platform_logo = platformData?.platforms?.logo_url || null
-  const watch_link   = platformData?.watch_link          || null
+  const watch_link    = platformData?.watch_link          || null
 
-  const myRating     = (row.ratings || []).find(r => r.user_id === userId)
+  const myRating      = (row.ratings || []).find(r => r.user_id === userId)
   const watched_by_me = !!myRating
-  const my_rating    = myRating?.rating || null
+  const my_rating     = myRating?.rating || null
 
   return {
     id:             row.id,
@@ -66,9 +67,20 @@ export async function fetchMovies(userId) {
   return data.map(row => shapeMovie(row, userId))
 }
 
+// ─── Fetch single movie by id ─────────────────────────────────────────────────
+export async function fetchMovieById(movieId, userId) {
+  const { data, error } = await supabase
+    .from('movies')
+    .select(MOVIE_SELECT)
+    .eq('id', movieId)
+    .single()
+  if (error) throw error
+  return shapeMovie(data, userId)
+}
+
 // ─── Add a movie ──────────────────────────────────────────────────────────────
 export async function addMovie(movieData, userId) {
-  // 1. Insert movie
+  // 1. Insert core movie row
   const { data: movie, error: movieErr } = await supabase
     .from('movies')
     .insert({
@@ -84,7 +96,7 @@ export async function addMovie(movieData, userId) {
 
   if (movieErr) throw movieErr
 
-  // 2. Insert genres (junction)
+  // 2. Insert genres junction rows
   if (movieData.genre_ids?.length) {
     const { error: genreErr } = await supabase
       .from('movie_genres')
@@ -95,7 +107,7 @@ export async function addMovie(movieData, userId) {
     if (genreErr) throw genreErr
   }
 
-  // 3. Insert platform (junction)
+  // 3. Insert platform junction row
   if (movieData.platform_id) {
     const { error: platformErr } = await supabase
       .from('movie_platforms')
@@ -107,7 +119,6 @@ export async function addMovie(movieData, userId) {
     if (platformErr) throw platformErr
   }
 
-  // 4. Return shaped movie
   return fetchMovieById(movie.id, userId)
 }
 
@@ -134,7 +145,7 @@ export async function editMovie(movieId, movieData, userId) {
     )
   }
 
-  // 3. Replace platform
+  // 3. Replace platform — delete then re-insert
   await supabase.from('movie_platforms').delete().eq('movie_id', movieId)
   if (movieData.platform_id) {
     await supabase.from('movie_platforms').insert({
@@ -165,19 +176,7 @@ export async function rateMovie(movieId, userId, rating) {
       { onConflict: 'movie_id,user_id' }
     )
   if (error) throw error
-  // avg_rating is auto-updated by DB trigger — just re-fetch
   return fetchMovieById(movieId, userId)
-}
-
-// ─── Fetch single movie by id ─────────────────────────────────────────────────
-export async function fetchMovieById(movieId, userId) {
-  const { data, error } = await supabase
-    .from('movies')
-    .select(MOVIE_SELECT)
-    .eq('id', movieId)
-    .single()
-  if (error) throw error
-  return shapeMovie(data, userId)
 }
 
 // ─── Fetch user profile ───────────────────────────────────────────────────────
@@ -187,6 +186,17 @@ export async function fetchProfile(userId) {
     .select('*')
     .eq('id', userId)
     .single()
+
+  // If profile doesn't exist yet (race condition on signup), create it
+  if (error?.code === 'PGRST116') {
+    const { data: newProfile } = await supabase
+      .from('profiles')
+      .insert({ id: userId })
+      .select()
+      .single()
+    return newProfile
+  }
+
   if (error) throw error
   return data
 }

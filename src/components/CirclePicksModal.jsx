@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Sparkles, Tv, User, Calendar } from 'lucide-react'
+import { X, Sparkles, Tv, User, Calendar, Clock } from 'lucide-react'
 import { TMDB_IMG } from '../lib/supabase'
 import PosterFallback from './PosterFallback'
 import styles from './CirclePicksModal.module.css'
@@ -16,6 +16,15 @@ export default function CirclePicksModal({ movie, onClose, onViewDetail }) {
       document.body.style.overflow = ''
     }
   }, [onClose])
+
+  
+  const formatDuration = (totalMinutes) => {
+    if (!totalMinutes) return null
+    const hours   = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
+    // Returns "2h 46m" if hours > 0, otherwise just "45m"
+    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+  }
 
   const posterUrl = movie.poster_path && !imgError
     ? `${TMDB_IMG}${movie.poster_path}`
@@ -51,17 +60,31 @@ export default function CirclePicksModal({ movie, onClose, onViewDetail }) {
           </div>
 
           <div className={styles.info}>
-            {genre && <div className={styles.genreTag}>{genre}</div>}
             <h2 className={styles.title}>{movie.title}</h2>
+            {genre && <div className={styles.genreTag}>{genre}</div>}
 
-            {movie.release_year && (
-              <div className={styles.metaRow}><Calendar size={12} />{movie.release_year}</div>
-            )}
+            <div className={styles.dflex}>
+              {movie.release_year && (
+                <div className={styles.metaRow}>
+                  <Calendar size={13} />
+                  <span>{movie.release_year}</span>
+                </div>
+              )}
+              {movie.release_year && movie.duration && (
+                <span style={{ marginTop: '-2px', color: 'var(--text3)' }}>•</span>
+              )}
+              {movie.duration && (
+                <div className={styles.metaRow}>
+                  <Clock size={13} />
+                  <span>{formatDuration(movie.duration)}</span>
+                </div>
+              )}
+            </div>
             {movie.where_to_watch && (
               <div className={styles.metaRow}><Tv size={12} />{movie.where_to_watch}</div>
             )}
             <div className={styles.metaRow}>
-              <User size={12} />Added by <strong>{movie.added_by_name}</strong>
+              <User size={12} /><strong>{movie.added_by_name}</strong>
             </div>
 
             {movie.avg_rating && (
@@ -79,7 +102,7 @@ export default function CirclePicksModal({ movie, onClose, onViewDetail }) {
             className={styles.detailBtn}
             onClick={() => { onClose(); onViewDetail(movie) }}
           >
-            View details &amp; rate
+            View details
           </button>
           <button className={styles.closeTextBtn} onClick={onClose}>
             Maybe later

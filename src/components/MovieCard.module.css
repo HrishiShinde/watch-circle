@@ -119,12 +119,14 @@
   font-size: 11px;
   color: var(--text3);
   letter-spacing: 0.03em;
+  width: 70%;
 }
 
 .rating {
   font-size: 12px;
   font-weight: 600;
   color: var(--accent);
+  width: 30%;
 }
 
 .platform {

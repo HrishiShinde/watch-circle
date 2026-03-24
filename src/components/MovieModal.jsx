@@ -9,12 +9,12 @@ import styles from './MovieModal.module.css'
 const LABELS = ['','Terrible','Bad','Meh','Below avg','Average','Decent','Good','Great','Excellent','Masterpiece']
 
 export default function MovieModal({ movie, session, onClose, onRate, onEdit, onDelete }) {
-  const [hover,       setHover]       = useState(0)
-  const [selected,    setSelected]    = useState(0)
-  const [submitting,  setSubmitting]  = useState(false)
-  const [error,       setError]       = useState('')
+  const [hover,         setHover]         = useState(0)
+  const [selected,      setSelected]      = useState(0)
+  const [submitting,    setSubmitting]    = useState(false)
+  const [error,         setError]         = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const [imgError,    setImgError]    = useState(false)
+  const [imgError,      setImgError]      = useState(false)
 
   useEffect(() => {
     const handler = e => { if (e.key === 'Escape') onClose() }
@@ -44,7 +44,6 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
   const isModerator = session?.user?.user_metadata?.is_moderator === true
   const isOwner     = userId && movie.added_by === userId
   const canEdit     = isOwner || isModerator
-  const canDelete   = isOwner || isModerator
 
   const handleSubmit = async () => {
     if (!selected) { setError('Please pick a rating first!'); return }
@@ -61,14 +60,12 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
   }
 
   const formatDuration = (totalMinutes) => {
-    if (!totalMinutes) return '0m';
-    
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-
+    if (!totalMinutes) return null
+    const hours   = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
     // Returns "2h 46m" if hours > 0, otherwise just "45m"
-    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-  };
+    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+  }
 
   return (
     <div className={styles.backdrop} onClick={e => e.target === e.currentTarget && onClose()}>
@@ -93,7 +90,7 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
         <div className={styles.body}>
 
           {/* Edit / Delete — only visible to owner or mod */}
-          {canEdit && (
+          {/* {canEdit && (
             <div className={styles.modActions}>
               <button className={styles.editBtn} onClick={() => onEdit?.(movie)} title="Edit movie">
                 <Pencil size={13} /> Edit
@@ -107,10 +104,10 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
                 {confirmDelete ? 'Confirm delete?' : 'Delete'}
               </button>
             </div>
-          )}
+          )} */}
 
           <h2 className={styles.title}>{movie.title}</h2>
-          
+
           {/* Genre tags */}
           {genreList.length > 0 && (
             <div className={styles.genreTag}>
@@ -126,7 +123,9 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
                   <span>{movie.release_year}</span>
                 </div>
               )}
-              <span style={{ marginTop: "-2px" }}>•</span>
+              {movie.release_year && movie.duration && (
+                <span style={{ marginTop: '-2px', color: 'var(--text3)' }}>•</span>
+              )}
               {movie.duration && (
                 <div className={styles.metaRow}>
                   <Clock size={13} />
@@ -150,32 +149,40 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
                 </span>
               </div>
             )}
-            
+
             {(platformObj || movie.where_to_watch || movie.platform) && (
               <a
-                href={movie.watch_link}
+                href={movie.watch_link || undefined}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={styles.platformCard}
+                className={`${styles.platformCard} ${!movie.watch_link ? styles.platformCardNoLink : ''}`}
+                onClick={e => { if (!movie.watch_link) e.preventDefault() }}
               >
                 <div className={styles.platformLogo}>
                   {movie.platform_logo ? (
-                    <img src={movie.platform_logo} alt={movie.where_to_watch} className={styles.logoImg} />
+                    <img
+                      src={movie.platform_logo}
+                      alt={movie.where_to_watch}
+                      className={styles.logoImg}
+                      onError={e => { e.target.style.display = 'none' }}
+                    />
                   ) : (
-                    <span>🎬</span> /* Fallback emoji */
+                    <span>🎬</span>
                   )}
                 </div>
-                
                 <div className={styles.platformInfo}>
                   <span className={styles.platformName}>
                     {platformObj?.name || movie.where_to_watch || movie.platform}
                   </span>
-                  <span className={styles.platformSubtitle}>Watch Now</span>
+                  <span className={styles.platformSubtitle}>
+                    {movie.watch_link ? 'Watch Now' : 'No link added'}
+                  </span>
                 </div>
-
-                <div className={styles.externalIcon}>
-                  <ExternalLink size={14} strokeWidth={2.5} />
-                </div>
+                {movie.watch_link && (
+                  <div className={styles.externalIcon}>
+                    <ExternalLink size={14} strokeWidth={2.5} />
+                  </div>
+                )}
               </a>
             )}
           </div>

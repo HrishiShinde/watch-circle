@@ -131,6 +131,12 @@
   margin-bottom: 10px;
 }
 
+.dflex {
+  display: flex;
+  justify-content: space-between;
+  width: 120px;
+}
+
 .metaRow {
   display: flex;
   align-items: center;

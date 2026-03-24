@@ -1,5 +1,5 @@
 import { Sun, Moon, LogOut } from 'lucide-react'
-// import { supabase } from '../lib/supabase'
+import { supabase } from '../lib/supabase'
 import styles from './Navbar.module.css'
 
 export default function Navbar({ session, theme, onToggleTheme }) {
@@ -11,7 +11,7 @@ export default function Navbar({ session, theme, onToggleTheme }) {
     || session?.user?.email?.split('@')[0]
     || 'User'
 
-  // const handleLogout = () => supabase.auth.signOut()
+  const handleLogout = () => supabase.auth.signOut()
 
   return (
     <nav className={styles.nav}>
@@ -26,8 +26,7 @@ export default function Navbar({ session, theme, onToggleTheme }) {
           <div className={styles.avatar}>{initials}</div>
           <span className={styles.userName}>{displayName}</span>
         </div>
-        {/* onClick={handleLogout}  */}
-        <button className={styles.iconBtn} title="Sign out">
+        <button className={styles.iconBtn} onClick={handleLogout} title="Sign out">
           <LogOut size={16} />
         </button>
       </div>

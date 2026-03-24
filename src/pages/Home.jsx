@@ -13,6 +13,7 @@ import { useTheme }     from '../hooks/useTheme'
 import { useToast }     from '../hooks/useToast'
 import { useMovies }    from '../hooks/useMovies'
 import styles from './Home.module.css'
+import { Clapperboard, SearchX, AlertTriangle, Film, Eye, PartyPopper, Loader2 } from 'lucide-react'
 
 const MOCK_MOVIES = [
   { id:1, title:'Dune: Part Two', genre:'Sci-Fi', duration:166,
@@ -181,14 +182,29 @@ export default function Home({ session }) {
   }
 
   // ── Empty state ────────────────────────────────────────────────────────────
-  const emptyMessage = () => {
-    if (loading)     return { icon: '⏳', text: 'Loading your movies…' }
-    if (error)       return { icon: '⚠️', text: `Something went wrong: ${error}` }
-    if (search)      return { icon: '🔍', text: `No results for "${search}"` }
-    if (activeGenre) return { icon: '🎭', text: `No ${activeGenre} movies yet` }
-    if (filter === 'watched')   return { icon: '👀', text: 'Nothing watched yet — get watching!' }
-    if (filter === 'unwatched') return { icon: '🎉', text: "You've watched everything!" }
-    return { icon: '🎬', text: 'No movies yet. Add the first one!' }
+  const emptyMessage = () => { 
+    if (loading)     
+      return { icon: <Loader2 className="animate-spin" size={28} />, text: 'Loading your movies…' }
+
+    if (error)       
+      return { icon: <AlertTriangle size={28} />, text: `Something went wrong: ${error}` }
+
+    if (search)      
+      return { icon: <SearchX size={28} />, text: `No results for "${search}"` }
+
+    if (activeGenre) 
+      return { icon: <Film size={28} />, text: `No ${activeGenre} movies yet` }
+
+    if (filter === 'watched')   
+      return { icon: <Eye size={28} />, text: 'Nothing watched yet — get watching!' }
+
+    if (filter === 'unwatched') 
+      return { icon: <PartyPopper size={28} />, text: "You've watched everything!" }
+
+    return { 
+      icon: <Clapperboard size={32} />, 
+      text: 'No movies yet. Add the first one!' 
+    }
   }
   const empty = emptyMessage()
 

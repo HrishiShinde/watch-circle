@@ -252,9 +252,13 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
                   >★</button>
                 ))}
               </div>
-              {displayStar > 0 && (
-                <div className={styles.ratingLabel}>{displayStar}/10 — {LABELS[displayStar]}</div>
-              )}
+              <div className={styles.ratingLabel}>
+                {displayStar > 0 && (
+                  <>
+                    {displayStar}/10 — {LABELS[displayStar]}
+                  </>
+                )}
+              </div>
               {error && <div className={styles.error}>{error}</div>}
               <button
                 className={styles.submitBtn}

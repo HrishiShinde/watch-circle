@@ -17,7 +17,7 @@ const MOVIE_SELECT = `
 `
 
 // ─── Shape raw Supabase row → clean movie object ──────────────────────────────
-export function shapeMovie(row, userId) {
+export function shapeMovie(row, userId, circle_adder) {
   if (!row) {
     return row
   }
@@ -45,7 +45,7 @@ export function shapeMovie(row, userId) {
     avg_rating:     row.avg_rating,
     rating_count:   row.rating_count,
     added_by:       row.added_by,
-    added_by_name:  row.profiles?.display_name || 'Someone',
+    added_by_name:  circle_adder ? circle_adder?.display_name : row.profiles?.display_name || 'Someone',
     created_at:     row.created_at,
     genre:          genres.join(', ') || null,
     genres,
@@ -75,6 +75,7 @@ export async function fetchCircleMovies(circleId, userId) {
     .from('circle_movies')
     .select(`
       added_at,
+      profiles!added_by ( display_name, is_moderator ),
       movies (
         ${MOVIE_SELECT}
       )
@@ -83,7 +84,7 @@ export async function fetchCircleMovies(circleId, userId) {
     .order('added_at', { ascending: false })
 
   if (error) throw error
-  return data.map(row => shapeMovie(row.movies, userId))
+  return data.map(row => shapeMovie(row.movies, userId, row.profiles))
 }
 
 // ─── Add a movie to a circle's list ──────────────────────────────────────────

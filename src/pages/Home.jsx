@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import Navbar           from '../components/Navbar'
 import StatsBar         from '../components/StatsBar'
 import Toolbar          from '../components/Toolbar'

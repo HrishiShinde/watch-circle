@@ -47,6 +47,10 @@ export default function App() {
           element={session ? <Home session={session} /> : <Navigate to="/login" replace />}
         />
         <Route
+          path="/:movieId"
+          element={session ? <Home session={session} /> : <Navigate to="/login" replace />}
+        />
+        <Route
           path="/login"
           element={!session ? <Login /> : <Navigate to="/" replace />}
         />

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { X, Clock, Calendar, User, ExternalLink, Pencil, Trash2, MoreVertical, Camera, CirclePlay } from 'lucide-react'
+import { X, Clock, Calendar, User, ExternalLink, Pencil, Trash2, MoreVertical, Camera, CirclePlay, Maximize, Share2 } from 'lucide-react'
 import { TMDB_IMG } from '../lib/supabase'
 import { getPlatformByName } from '../lib/models'
 import GenreTag       from './GenreTag'
@@ -8,7 +8,7 @@ import styles from './MovieModal.module.css'
 
 const LABELS = ['','Terrible','Bad','Meh','Below avg','Average','Decent','Good','Great','Excellent','Masterpiece']
 
-export default function MovieModal({ movie, session, onClose, onRate, onEdit, onDelete }) {
+export default function MovieModal({ movie, session, onClose, onRate, onEdit, onDelete, onShare }) {
   const [hover,         setHover]         = useState(0)
   const [selected,      setSelected]      = useState(0)
   const [submitting,    setSubmitting]    = useState(false)
@@ -16,6 +16,7 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [imgError,      setImgError]      = useState(false)
   const [menuOpen,      setMenuOpen]      = useState(false)
+  const [showImageModal, setShowImageModal] = useState(false)
   const menuRef = useRef(null)
 
   useEffect(() => {
@@ -87,6 +88,7 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
         {/* Close button */}
         <button className={styles.closeBtn} onClick={onClose}><X size={16} /></button>
 
+        <button className={styles.shareBtn} onClick={() => onShare(movie.id)} title="Share"><Share2 size={16} /></button>
         {/* ⋮ Menu — only for owner/mod */}
         {canEdit && (
           <div className={styles.menuWrap} ref={menuRef}>
@@ -131,12 +133,38 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
         {/* ── Left: poster ── */}
         <div className={styles.posterCol}>
           {posterUrl ? (
-            <img
-              src={posterUrl}
-              alt={movie.title}
-              className={styles.poster}
-              onError={() => setImgError(true)}
-            />
+            <>
+              <div 
+                className={styles.posterWrapper}
+                onClick={() => setShowImageModal(true)}
+              >
+                <img
+                  src={posterUrl}
+                  alt={movie.title}
+                  className={styles.poster}
+                  onError={() => setImgError(true)}
+                />
+
+                <div className={styles.posterOverlay}>
+                  <span className={styles.posterOverlayText}>
+                    <Maximize />
+                  </span>
+                </div>
+              </div>
+
+              {showImageModal && (
+                <div 
+                  className={styles.imageModalBackdrop}
+                  onClick={() => setShowImageModal(false)}
+                >
+                  <img
+                    src={posterUrl}
+                    alt={movie.title}
+                    className={styles.fullImage}
+                  />
+                </div>
+              )}
+            </>
           ) : (
             <PosterFallback title={movie.title} genres={genreList} size="lg" />
           )}

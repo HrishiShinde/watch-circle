@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { X, Clock, Calendar, User, ExternalLink, Pencil, Trash2, MoreVertical, Camera } from 'lucide-react'
+import { X, Clock, Calendar, User, ExternalLink, Pencil, Trash2, MoreVertical, Camera, CirclePlay } from 'lucide-react'
 import { TMDB_IMG } from '../lib/supabase'
 import { getPlatformByName } from '../lib/models'
 import GenreTag       from './GenreTag'
@@ -208,7 +208,7 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
                       onError={e => { e.target.style.display = 'none' }}
                     />
                   ) : (
-                    <span>🎬</span>
+                    <span><CirclePlay className={styles.defaultPlatformLogo} /></span>
                   )}
                 </div>
                 <div className={styles.platformInfo}>

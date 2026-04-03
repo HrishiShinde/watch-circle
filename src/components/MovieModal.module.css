@@ -234,6 +234,9 @@
   width: auto; height: auto;
   object-fit: contain;
 }
+.defaultPlatformLogo {
+  color: var(--text2);
+}
 
 .platformInfo { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
 .platformName { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

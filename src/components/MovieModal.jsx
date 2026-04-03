@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { X, Clock, Calendar, User, ExternalLink, Pencil, Trash2, MoreVertical, Camera, CirclePlay } from 'lucide-react'
+import { X, Clock, Calendar, User, ExternalLink, Pencil, Trash2, MoreVertical, Camera, CirclePlay, Maximize } from 'lucide-react'
 import { TMDB_IMG } from '../lib/supabase'
 import { getPlatformByName } from '../lib/models'
 import GenreTag       from './GenreTag'
@@ -16,6 +16,7 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [imgError,      setImgError]      = useState(false)
   const [menuOpen,      setMenuOpen]      = useState(false)
+  const [showImageModal, setShowImageModal] = useState(false)
   const menuRef = useRef(null)
 
   useEffect(() => {
@@ -131,12 +132,38 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
         {/* ── Left: poster ── */}
         <div className={styles.posterCol}>
           {posterUrl ? (
-            <img
-              src={posterUrl}
-              alt={movie.title}
-              className={styles.poster}
-              onError={() => setImgError(true)}
-            />
+            <>
+              <div 
+                className={styles.posterWrapper}
+                onClick={() => setShowImageModal(true)}
+              >
+                <img
+                  src={posterUrl}
+                  alt={movie.title}
+                  className={styles.poster}
+                  onError={() => setImgError(true)}
+                />
+
+                <div className={styles.posterOverlay}>
+                  <span className={styles.posterOverlayText}>
+                    <Maximize />
+                  </span>
+                </div>
+              </div>
+
+              {showImageModal && (
+                <div 
+                  className={styles.imageModalBackdrop}
+                  onClick={() => setShowImageModal(false)}
+                >
+                  <img
+                    src={posterUrl}
+                    alt={movie.title}
+                    className={styles.fullImage}
+                  />
+                </div>
+              )}
+            </>
           ) : (
             <PosterFallback title={movie.title} genres={genreList} size="lg" />
           )}

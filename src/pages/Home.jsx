@@ -12,7 +12,8 @@ import ToastContainer   from '../components/Toast'
 import { useTheme }     from '../hooks/useTheme'
 import { useToast }     from '../hooks/useToast'
 import { useMovies }    from '../hooks/useMovies'
-import styles from './Home.module.css'
+import styles           from './Home.module.css'
+import { useParams, useNavigate } from 'react-router-dom';
 import { Clapperboard, SearchX, AlertTriangle, Film, Eye, PartyPopper, Loader2, Star } from 'lucide-react'
 
 const MOCK_MOVIES = [
@@ -78,7 +79,7 @@ const MOCK_MOVIES = [
 ];
 
 export default function Home({ session }) {
-  const { theme, toggle }                             = useTheme()
+  const { theme, toggle }                                         = useTheme()
   const { toasts, removeToast, success, error: toastError, info } = useToast()
   const {
     movies, profile, loading, error,
@@ -95,6 +96,8 @@ export default function Home({ session }) {
   const [circlePickMovie, setCirclePickMovie] = useState(null)
   const [showAdd,         setShowAdd]         = useState(false)
   const [addInitialQuery, setAddInitialQuery] = useState('')
+  const navigate                              = useNavigate();
+  const { movieId }                           = useParams();
 
   // ── Filtering ──────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
@@ -149,7 +152,7 @@ export default function Home({ session }) {
     try {
       const updated = await handleRate(movieId, rating)
       setDetailMovie(prev => prev?.id === movieId ? updated : prev)
-      success('Marked as watched! 🎬')
+      success('Marked as watched!')
     } catch (err) {
       toastError('Failed to save rating. Try again.')
     }
@@ -191,6 +194,24 @@ export default function Home({ session }) {
       toastError('Failed to delete movie. Try again.')
     }
   }
+
+  const handleMovieModalClose = () => {
+    setDetailMovie(null)
+    navigate('/', { replace: true });
+  }
+
+  const onShare = async (movieId) => {
+    let link = `${window.location.href}${movieId}`
+    navigator.clipboard.writeText(link)
+  }
+  
+  // Opens any movie if id passed in url. 
+  useEffect(() => {
+    let movie = filtered.filter((m) => m.id == movieId ) ?? []
+    if (movie.length > 0) {
+      setDetailMovie(movie[0])
+    }
+  }, [movies])
 
   // ── Empty state ────────────────────────────────────────────────────────────
   const emptyState = useMemo(() => { 
@@ -315,10 +336,11 @@ export default function Home({ session }) {
         <MovieModal
           movie={detailMovie}
           session={enrichedSession}
-          onClose={() => setDetailMovie(null)}
+          onClose={handleMovieModalClose}
           onRate={onRate}
           onEdit={onEditOpen}
           onDelete={onDelete}
+          onShare={onShare}
         />
       )}
 

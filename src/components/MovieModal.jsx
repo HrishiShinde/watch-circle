@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { X, Clock, Calendar, User, ExternalLink, Pencil, Trash2, MoreVertical, Camera, CirclePlay, Maximize } from 'lucide-react'
+import { X, Clock, Calendar, User, ExternalLink, Pencil, Trash2, MoreVertical, Camera, CirclePlay, Maximize, Share2 } from 'lucide-react'
 import { TMDB_IMG } from '../lib/supabase'
 import { getPlatformByName } from '../lib/models'
 import GenreTag       from './GenreTag'
@@ -8,7 +8,7 @@ import styles from './MovieModal.module.css'
 
 const LABELS = ['','Terrible','Bad','Meh','Below avg','Average','Decent','Good','Great','Excellent','Masterpiece']
 
-export default function MovieModal({ movie, session, onClose, onRate, onEdit, onDelete }) {
+export default function MovieModal({ movie, session, onClose, onRate, onEdit, onDelete, onShare }) {
   const [hover,         setHover]         = useState(0)
   const [selected,      setSelected]      = useState(0)
   const [submitting,    setSubmitting]    = useState(false)
@@ -88,6 +88,7 @@ export default function MovieModal({ movie, session, onClose, onRate, onEdit, on
         {/* Close button */}
         <button className={styles.closeBtn} onClick={onClose}><X size={16} /></button>
 
+        <button className={styles.shareBtn} onClick={() => onShare(movie.id)} title="Share"><Share2 size={16} /></button>
         {/* ⋮ Menu — only for owner/mod */}
         {canEdit && (
           <div className={styles.menuWrap} ref={menuRef}>

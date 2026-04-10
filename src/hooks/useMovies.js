@@ -16,8 +16,6 @@ export function useMovies(session, activeCircle) {
   // ── Derive circle scope ────────────────────────────────────────────────────
   // null activeCircle = Global, otherwise scoped to that circle's id
   const circleId = activeCircle?.id ?? null
-
-  console.log(circleId);
   
   // ── Load movies ────────────────────────────────────────────────────────────
   const load = useCallback(async () => {
@@ -29,7 +27,6 @@ export function useMovies(session, activeCircle) {
         circleId ? fetchCircleMovies(circleId, userId) : fetchMovies(userId),
         profile ? Promise.resolve(profile) : fetchProfile(userId),
       ])
-      console.log(moviesData);
       setMovies(moviesData)
       if (!profile) setProfile(profileData)
     } catch (err) {

@@ -116,7 +116,6 @@ export async function fetchMovieByTMDBId(movieId, userId) {
     .eq('tmdb_id', movieId)
     .maybeSingle();
 
-  console.log("[db] data:", data);
   if (error) throw error
   return shapeMovie(data, userId)
 }

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Home   from './pages/Home'
 import Login  from './pages/Login'
 import Signup from './pages/Signup'
+import JoinCircle from './pages/JoinCircle'
 import { supabase } from './lib/supabase'
 import styles from './App.module.css'
 
@@ -53,6 +54,10 @@ export default function App() {
         <Route
           path="/signup"
           element={!session ? <Signup /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/join"
+          element={session ? <JoinCircle session={session} /> : <Navigate to="/login" replace />}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

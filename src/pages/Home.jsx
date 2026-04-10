@@ -17,6 +17,7 @@ import { useMovies }      from '../hooks/useMovies'
 import { useCircles }     from '../hooks/useCircles'
 import styles from './Home.module.css'
 import { Clapperboard, SearchX, AlertTriangle, Film, Eye, PartyPopper, Loader2, Star } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 // localStorage key — per user so switching accounts doesn't bleed state
 const getStorageKey = (userId) => `wc_active_circle_${userId}`
@@ -84,13 +85,14 @@ const MOCK_MOVIES = [
 ];
 
 export default function Home({ session }) {
-  const { theme, toggle }                                          = useTheme()
+  const { theme, toggle }                                         = useTheme()
   const { toasts, removeToast, success, error: toastError, info } = useToast()
   // ── Circle context — must be declared before useMovies ───────────────────────
   const [activeCircle,     setActiveCircle]     = useState(null)
   const [circlesReady,     setCirclesReady]     = useState(false)
   const [showCreateCircle, setShowCreateCircle] = useState(false)
   const [detailCircle,     setDetailCircle]     = useState(null)
+  const navigate                                = useNavigate()
 
   const {
     movies, profile, loading, error,
@@ -108,6 +110,7 @@ export default function Home({ session }) {
     handleLeave,
     handleGenerateCode,
     handleFetchCodes,
+    handleJoin,
   } = useCircles(session?.user?.id)
 
   // Mark circles as ready once we have data
@@ -324,6 +327,16 @@ export default function Home({ session }) {
     }
   }
 
+  const onJoinCircle = async (code) => {
+    try {
+      const joinedCircle = await handleJoin(code)
+      success(`Welcome to "${joinedCircle.name}"!`)
+      changeActiveCircle(joinedCircle)
+    } catch (err) {
+      toastError(err.message || 'Failed to join circle.')
+    }
+  }
+
   // ── Empty state ────────────────────────────────────────────────────────────
   const emptyState = useMemo(() => {
     if (loading)
@@ -372,6 +385,7 @@ export default function Home({ session }) {
           onCircleChange={changeActiveCircle}
           onCreateCircle={() => setShowCreateCircle(true)}
           onViewCircle={setDetailCircle}
+          onJoinCircle={() => navigate('/join')}
         />
 
         <div className={styles.hero}>

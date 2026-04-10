@@ -191,4 +191,4 @@ export async function joinByCode(code, userId) {
     .eq('id', invite.id)
 
   return invite.circles
-}   
+}

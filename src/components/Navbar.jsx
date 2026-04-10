@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Sun, Moon, LogOut, ChevronDown, Globe, User, Users, Plus, Settings } from 'lucide-react'
+import { Sun, Moon, LogOut, ChevronDown, Globe, User, Users, Plus, Settings, LogIn } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import styles from './Navbar.module.css'
 
@@ -13,6 +13,7 @@ export default function Navbar({
   onCircleChange,
   onCreateCircle,
   onViewCircle,      // (circle) => void — opens CircleDetailModal
+  onJoinCircle,      // () => void — opens join flow
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [hoveredCircleId, setHoveredCircleId] = useState(null)
@@ -168,6 +169,13 @@ export default function Navbar({
               >
                 <Plus size={14} className={styles.itemIcon} />
                 <span>Create Circle</span>
+              </button>
+              <button
+                className={`${styles.dropdownItem} ${styles.joinItem}`}
+                onClick={() => { setDropdownOpen(false); onJoinCircle() }}
+              >
+                <LogIn size={14} className={styles.itemIcon} />
+                <span>Join with Code</span>
               </button>
 
             </div>

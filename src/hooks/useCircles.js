@@ -3,7 +3,7 @@ import {
   fetchCircles, fetchCircleMembers,
   createCircle, updateCircle, deleteCircle,
   promoteMember, removeMember, leaveCircle,
-  generateInviteCode, fetchInviteCodes,
+  generateInviteCode, fetchInviteCodes, joinByCode
 } from '../lib/circles'
 import { supabase } from '../lib/supabase'
 
@@ -122,6 +122,18 @@ export function useCircles(userId) {
     return fetchInviteCodes(circleId)
   }, [])
 
+  const handleJoin = useCallback(async (code) => {
+    if (USE_MOCK) {
+      const mockCircle = { id: `mock-${Date.now()}`, name: 'Joined Circle', is_personal: false, open_invites: false, role: 'member' }
+      setCircles(prev => [...prev, mockCircle])
+      return mockCircle
+    }
+    const circle = await joinByCode(code, userId)
+    // Reload so the new circle_members row is reflected everywhere
+    await load()
+    return circle
+  }, [userId, load])
+
   return {
     circles,
     personalCircle,
@@ -137,5 +149,6 @@ export function useCircles(userId) {
     handleLeave,
     handleGenerateCode,
     handleFetchCodes,
+    handleJoin
   }
 }
